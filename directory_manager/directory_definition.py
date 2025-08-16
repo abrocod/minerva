@@ -71,3 +71,24 @@ class YoutubeDirectory(DirectoryBase):
         full_path = self.get_full_path('analysis')
         DirectoryCreator.create_directory(full_path)
         return full_path
+    
+
+class TwitterDirectory(DirectoryBase):
+    ''' Directory for all the Twitter downloader artifacts. '''
+    
+    def get_base(self) -> str:
+        return 'twitter_data'
+    
+    def get_structure(self) -> dict[str, any]:
+        return {
+            'tweets': {},  
+        }
+    
+    def get_tweets_dir(self) -> str:
+        full_path = self.get_full_path('tweets')
+        DirectoryCreator.create_directory(full_path)
+        return full_path
+    
+    def get_twitter_dir(self) -> str:
+        """Alias for get_tweets_dir for backward compatibility"""
+        return self.get_tweets_dir()

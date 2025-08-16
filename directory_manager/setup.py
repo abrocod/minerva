@@ -3,7 +3,8 @@ import os
 from minerva.directory_manager.base import ROOT_DIR_PATH, DirectoryBase
 from minerva.directory_manager.directory_definition import (
     EvernoteDirectory,
-    YoutubeDirectory
+    YoutubeDirectory,
+    TwitterDirectory
 )
 
 
@@ -13,6 +14,7 @@ class DirectoryStructureBuilder:
         directories: list[DirectoryBase] = [
             EvernoteDirectory(),
             YoutubeDirectory(),
+            TwitterDirectory(),
         ]
 
         for directory in directories:
