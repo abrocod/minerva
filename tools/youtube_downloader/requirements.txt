@@ -1,0 +1,4 @@
+yt-dlp>=2023.7.6
+openai>=1.0.0
+prefect>=2.10.0
+pathlib 
