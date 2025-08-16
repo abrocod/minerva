@@ -1,18 +1,17 @@
 # YouTube Downloader and Transcriber
 
-A comprehensive tool for downloading YouTube videos/audio and transcribing them using OpenAI's Whisper API with Prefect workflow management.
+A comprehensive tool for downloading YouTube videos/audio and transcribing them using OpenAI's Whisper API. Includes both a simple transcriber and a Prefect-based workflow version.
 
 ## Features
 
 - **Download YouTube videos or audio** using `yt-dlp`
 - **Automatic transcription** using OpenAI Whisper API
-- **Workflow management** with Prefect for reliability and retry logic
-- **Automatic retry** on failures with configurable delays
+- **Markdown output** with structured formatting
 - **Timestamped transcripts** with detailed segment information
-- **Multiple output formats** (text files with full transcript and timestamped segments)
 - **Temporary file management** with automatic cleanup
 - **Language detection** and custom language specification
 - **File size validation** (Whisper API has 25MB limit)
+- **Configurable output directory**
 
 ## Installation
 
@@ -40,9 +39,21 @@ A comprehensive tool for downloading YouTube videos/audio and transcribing them 
 
 ## Usage
 
-### Command Line Interface
+### Simple Transcriber (Recommended)
 
 #### Basic transcription:
+```bash
+python simple_transcriber.py "https://www.youtube.com/watch?v=564zWPXrV_4"
+```
+
+#### Keep audio file after transcription:
+```bash
+python simple_transcriber.py "https://www.youtube.com/watch?v=564zWPXrV_4" --keep-audio
+```
+
+### Prefect-based Transcriber (Advanced)
+
+#### Basic transcription with workflow management:
 ```bash
 python transcriber.py "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
@@ -50,16 +61,6 @@ python transcriber.py "https://www.youtube.com/watch?v=VIDEO_ID"
 #### With language specification:
 ```bash
 python transcriber.py "https://www.youtube.com/watch?v=VIDEO_ID" --language en
-```
-
-#### Keep audio file after transcription:
-```bash
-python transcriber.py "https://www.youtube.com/watch?v=VIDEO_ID" --keep-audio
-```
-
-#### Custom output path:
-```bash
-python transcriber.py "https://www.youtube.com/watch?v=VIDEO_ID" --output "/path/to/transcript.txt"
 ```
 
 #### All options:
@@ -113,30 +114,37 @@ python transcriber.py "https://www.youtube.com/watch?v=VIDEO_ID"
 
 ## Output Format
 
-The transcriber generates a detailed text file with:
+The transcriber generates a markdown file with:
 
-1. **Metadata**: Language, duration, source audio file
-2. **Full transcript**: Complete transcription text
+1. **Video Information**: Title, language, duration
+2. **Full transcript**: Complete transcription text  
 3. **Timestamped segments**: Individual segments with start/end times
 
+Output directory: `/Users/jinchao/AlgoTrading/minerva_base/youtube_data/downloads/`
+
 Example output:
-```
-YouTube Video Transcription
-==================================================
+```markdown
+# YouTube Video Transcription
 
-Language: en
-Duration: 125.50 seconds
-Audio file: /tmp/youtube_transcribe_xyz/video_title.mp3
+## Video Information
 
-Full Transcript:
---------------------
+**Title:** Example Video Title
+
+**Language:** chinese
+
+**Duration:** 684.71 seconds
+
+## Full Transcript
+
 Welcome to this tutorial on machine learning. Today we'll be discussing...
 
-Timestamped Segments:
--------------------------
-[0.00s - 3.50s]: Welcome to this tutorial on machine learning.
-[3.50s - 8.20s]: Today we'll be discussing the fundamentals of neural networks.
-[8.20s - 12.80s]: Let's start with the basic concepts...
+## Timestamped Segments
+
+**[0.00s - 3.50s]:** Welcome to this tutorial on machine learning.
+
+**[3.50s - 8.20s]:** Today we'll be discussing the fundamentals of neural networks.
+
+**[8.20s - 12.80s]:** Let's start with the basic concepts...
 ```
 
 ## Configuration

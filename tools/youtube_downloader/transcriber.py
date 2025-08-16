@@ -11,8 +11,12 @@ from openai import OpenAI
 from prefect import flow, task
 from prefect.logging import get_run_logger
 from prefect.task_runners import SequentialTaskRunner
+from dotenv import load_dotenv
 
 from .downloader import DOWNLOAD_DIR, download_media
+
+# Load environment variables from .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 # Configuration
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
