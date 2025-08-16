@@ -1,175 +1,107 @@
-# Evernote Notes Extractor for Mac
+# Evernote Note Extractor
 
-A Python script that extracts all notes from Evernote on macOS and saves them locally in an organized folder structure.
+A Python tool to extract and parse notes from Evernote on macOS.
+
+## Prerequisites
+
+- macOS with Evernote app installed
+- Python 3.6+
+- Evernote must be running and logged in
 
 ## Features
 
-- ✅ Extracts all notes from all notebooks
-- 📁 Organizes notes by notebook in separate folders
-- 🏷️ Preserves note metadata (title, creation date, modification date, tags)
-- 📝 Saves notes as HTML files with embedded styling
-- 📊 Generates extraction metadata and logs
-- 🔄 Progress tracking with detailed logging
-- ⚡ Improved reliability with individual note extraction
-- 🛡️ Error handling and recovery
-
-## Requirements
-
-- **macOS** (tested on macOS 10.14+)
-- **Evernote app** installed and running
-- **Python 3.6+**
-- No additional Python packages required (uses only standard library)
+- List all notebooks in your Evernote account
+- Extract all notes from a specific notebook
+- Export notes in multiple formats:
+  - JSON (with both HTML and plain text content)
+  - Markdown
+  - HTML
+- Automatic directory management using the Minerva directory structure
+- Preserves note metadata (creation date, modification date, tags)
 
 ## Installation
 
-1. Clone or download this repository
-2. Navigate to the `tools/evernote_extractor` directory
-3. Make the script executable:
-   ```bash
-   chmod +x evernote_extractor_applescript.py
-   ```
+No additional dependencies required - uses built-in Python libraries and macOS AppleScript.
 
 ## Usage
 
-### Basic Usage
+### Method 1: Manual Export and Parse (Recommended)
 
-1. **Start Evernote** on your Mac
-2. Run the extractor:
-   ```bash
-   python3 evernote_extractor_applescript.py
-   ```
+Due to Evernote's AppleScript limitations, the recommended approach is:
 
-### Command Line Options
+1. **Export from Evernote:**
+   - Open Evernote on your Mac
+   - Right-click on the notebook you want to export (e.g., "Eco")
+   - Choose "Export Notebook..."
+   - Select format: "Evernote XML Format (.enex)"
+   - Save the file
+
+2. **Parse the exported file:**
 
 ```bash
-# Extract to default directory (evernote_export)
-python3 evernote_extractor_applescript.py
+# Navigate to the extractor directory
+cd minerva/tools/evernote_extractor
 
-# Extract to custom directory
-python3 evernote_extractor_applescript.py --output-dir /path/to/my/backup
+# Run the manual export guide
+python manual_export_guide.py
 
-# Check if Evernote is running and list notebooks
-python3 evernote_extractor_applescript.py --check-only
+# Or directly process an ENEX file
+python manual_export_guide.py /path/to/export.enex json
+python manual_export_guide.py /path/to/export.enex markdown
 ```
 
-### Output Structure
+### Method 2: AppleScript Integration (Limited)
 
-The script creates the following directory structure:
+The AppleScript-based extractor has limited functionality due to Evernote's restricted AppleScript support:
 
-```
-evernote_export/
-├── notes/
-│   ├── Notebook1/
-│   │   ├── 0001_Note_Title.html
-│   │   ├── 0002_Another_Note.html
-│   │   └── ...
-│   ├── Notebook2/
-│   │   └── ...
-│   └── ...
-├── metadata/
-│   └── extraction_metadata.json
-└── logs/
-    └── extraction_20231201_143022.log
+```python
+from minerva.tools.evernote_extractor import EvernoteExtractor
+
+# Initialize extractor
+extractor = EvernoteExtractor()
+
+# Attempt to list notebooks (may not work with all Evernote versions)
+extractor.list_all_notebooks()
 ```
 
-### HTML Output Format
+## Output Location
 
-Each note is saved as an HTML file containing:
-- **Metadata section**: Title, notebook, creation/modification dates, tags
-- **Content section**: Original note content with formatting preserved
-- **Styling**: Clean, readable CSS styling
+By default, exported notes are saved to:
+`/Users/jinchao/AlgoTrading/minerva_base/evernote_data/export/`
+
+Files are named with the pattern: `{notebook_name}_{timestamp}.{format}`
+
+## Export Formats
+
+### JSON Format
+- Contains structured data with all note metadata
+- Includes both HTML and plain text versions of content
+- Best for programmatic processing
+
+### Markdown Format
+- Human-readable format
+- Preserves note structure and metadata
+- Good for viewing in text editors or converting to other formats
+
+### HTML Format
+- Preserves original Evernote formatting
+- Can be opened directly in browsers
+- Includes styling for better readability
 
 ## Permissions
 
-When you first run the script, macOS may ask for permissions:
-
-1. **Accessibility Access**: Allow Terminal/Python to control Evernote
-2. **AppleScript Access**: Allow the script to communicate with Evernote
-
-To grant permissions:
-1. Go to **System Preferences** → **Security & Privacy** → **Privacy**
-2. Select **Accessibility** and add Terminal (or your Python interpreter)
-3. Select **Automation** and allow Terminal to control Evernote
+The first time you run this tool, macOS may ask for permission to control Evernote via AppleScript. You'll need to grant this permission in System Preferences > Security & Privacy > Privacy > Automation.
 
 ## Troubleshooting
 
-### Common Issues
+1. **"Evernote not found" error**: Make sure Evernote is installed and running
+2. **"Notebook not found" error**: Check the exact notebook name (case-sensitive)
+3. **Empty export**: Ensure the notebook contains notes and Evernote is logged in
+4. **Permission denied**: Grant AppleScript permissions in System Preferences
 
-**"Evernote is not running"**
-- Solution: Start the Evernote app before running the script
+## Note
 
-**"AppleScript execution failed"**
-- Check that Evernote is fully loaded (not just starting up)
-- Ensure you have the latest version of Evernote
-- Try restarting Evernote and running the script again
-
-**Permission denied errors**
-- Grant the necessary permissions in System Preferences (see Permissions section)
-- Try running with `sudo` if file permission issues persist
-
-**Timeout errors for large notes**
-- The script includes timeout handling for large notes
-- Failed extractions are logged and can be retried manually
-
-**Special characters in note titles**
-- The script automatically sanitizes filenames
-- Original titles are preserved in the HTML content
-
-### Performance Tips
-
-- **Close other applications** to give Evernote more resources
-- **For large libraries** (1000+ notes), consider running overnight
-- **Monitor progress** through the detailed logging output
-- **Check logs** if extraction seems to hang on specific notes
-
-### Limitations
-
-- **Attachments**: Currently extracts embedded content but may not preserve all attachment types
-- **Formatting**: Complex formatting may not be perfectly preserved
-- **Images**: Embedded images are included in HTML but may reference Evernote's internal storage
-- **Encrypted notes**: Cannot extract password-protected notes
-
-## Advanced Usage
-
-### Resuming Failed Extractions
-
-If extraction fails partway through:
-1. Check the log file for the last successfully extracted note
-2. The script will skip already extracted notes on restart
-3. Failed notes are listed in the metadata JSON file
-
-### Batch Processing
-
-For very large libraries, you can process notebooks individually by modifying the script or using the metadata to identify problematic notebooks.
-
-### Custom Output Formats
-
-The script can be easily modified to output in different formats:
-- Markdown files instead of HTML
-- Plain text extraction
-- JSON export of all metadata
-
-## Script Versions
-
-This repository includes two versions:
-
-1. **`evernote_extractor.py`**: Basic version with batch processing
-2. **`evernote_extractor_applescript.py`**: Improved version with individual note extraction (recommended)
-
-Use the improved version (`evernote_extractor_applescript.py`) for better reliability and error handling.
-
-## Contributing
-
-Feel free to submit issues or pull requests to improve the script. Common enhancement areas:
-- Better attachment handling
-- Additional output formats
-- GUI interface
-- Incremental backup support
-
-## License
-
-This script is provided as-is for personal use. Please respect Evernote's terms of service when using this tool.
-
-## Disclaimer
-
-This tool is not affiliated with Evernote Corporation. Always maintain your original Evernote data as the primary source. Test the script with a small subset of notes before running on your entire library. 
+This tool uses AppleScript to communicate with Evernote, which means:
+- Evernote must be running during extraction
+- The extraction speed depends on the number of notes
+- Large notebooks may take some time to export
